@@ -1,0 +1,89 @@
+{% extends "layout.html" %}
+{% block content %}
+    <article class="media content-section">
+        <img class="rounded-circle article-img" src="{{ url_for('static', filename='img/' + post.author.image_file )}}">
+        <div class="media-body">
+            <div class="article-metadata">
+                <a class="mr-2" href="{{ url_for('users.user_posts', username=post.author.username) }}">{{ post.author.username }}</a>
+                <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d %X') }}</small>
+                {% if post.author == current_user %}
+                    <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('posts.update_post', post_id=post.id) }}">수정</a>
+                    <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#deleteModal">삭제</button> <!--button태그는 input type='button'태그와 같은데 스타일 적용 가능-->
+                    <!--눌렀을 때 alert 기능-->
+                {% endif %}
+            </div>
+        <h4 class="article-title">{{ post.title }}</h4>
+        <p class="article-content">{{ post.content }}</p>
+        {% if post.image_files %}
+            {% for image in post.image_files %}
+                <img src="{{ url_for('static', filename='img/' + image )}}"><br><br>
+            {% endfor %}
+        {% endif %}
+        </div>
+    </article>
+    <div class="content-section">
+        <form method="POST" action="">
+            {{ form.hidden_tag() }}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4">댓글 {{ comments|count }}개</legend>
+                <div class="form-group">
+                    {{ form.body.label(class="form-control-label") }}
+                    {% if form.body.errors %}
+                        {{ form.body(class="form-control form-control-lg is-invalid") }}
+                        <div class="invalid-feedback">
+                            {% for error in form.body.errors %}
+                                <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        {% if current_user.is_authenticated %}
+                            {{ form.body(class="form-control form-control-lg", placeholder="댓글을 작성하세요.") }}
+                        {% else %}
+                            {{ form.body(class="form-control form-control-lg", placeholder="댓글을 작성하려면 로그인을 해주세요.") }}
+                        {% endif %}
+                    {% endif %}
+                </div>
+                {% if current_user.is_authenticated %}
+                    <div class="form-group">
+                        {{ form.submit(class="btn btn-outline-info") }}
+                    </div>
+                {% endif %}
+            </fieldset>
+        </form>
+        {% for comment in comments %}
+        <article class="media content-section comment-section">
+            <img class="rounded-circle article-img" src="{{ url_for('static', filename='img/' + comment.writer.image_file )}}" alt="profile image">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <a class="mr-2" href="{{ url_for('users.user_posts', username=comment.writer.username) }}">{{ comment.writer.username }}</a>
+                    <small class="text-muted">{{ comment.timestamp.strftime('%Y-%m-%d %X') }}</small>
+                    {% if comment.writer == current_user %}
+                        <a class="btn btn-secondary btn-sm m-1" href="{{ url_for('posts.update_comment', post_id=post.id, comment_id=comment.id) }}">수정</a>
+                        <a class="btn btn-danger btn-sm" href="{{ url_for('posts.delete_comment', post_id=post.id, comment_id=comment.id) }}">삭제</a>
+                    {% endif %}
+                </div>
+                <p class="article-content">{{ comment.body }}</p>
+            </div>
+        </article>
+        {% endfor %}
+    </div>
+    <!--bootstrap alert-->
+    <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">게시물을 삭제하시겠습니까?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">취소</button>
+                    <form action="{{ url_for('posts.delete_post', post_id=post.id) }}" method="POST">
+                        <input class="btn btn-danger" type="submit" value="삭제"> <!--url 이동하려면 a태그나 submit 사용-->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

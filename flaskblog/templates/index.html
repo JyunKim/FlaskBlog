@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block content %}
+    {% for post in posts.items %} <!--현재 page에 있는 item(post)들-->
+        <article class="media content-section">
+            <img class="rounded-circle article-img" src="{{ url_for('static', filename='img/' + post.author.image_file )}}" alt="profile image">
+            <div class="media-body">
+                <div class="article-metadata">
+                    <a class="mr-2" href="{{ url_for('users.user_posts', username=post.author.username) }}">{{ post.author.username }}</a>
+                    <small class="text-muted">{{ post.date_posted.strftime('%Y-%m-%d') }}</small>
+                </div>
+                <h4><a class="article-title" href="{{ url_for('posts.post', post_id=post.id) }}">{{ post.title }}</a></h4>
+                <p class="article-content">{{ post.content }}</p>
+            </div>
+        </article>
+    {% endfor %}
+    {% for page in posts.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=3) %} <!--전체 page 리스트-->
+        {% if page %}
+            {% if page == posts.page %}
+                <a class="btn btn-info mb-4" href="{{ url_for('main.index', page=page) }}">{{ page }}</a> <!--url_for속의 함수가 받는 매개변수가 없는데 인자를 보내면 query string으로 보냄-->
+            {% else %}
+                <a class="btn btn-outline-info mb-4" href="{{ url_for('main.index', page=page) }}">{{ page }}</a>
+            {% endif %}
+        {% else %}
+            ... <!--page에 none값이 오면 ...처리(먼 페이지 생략)-->
+        {% endif %}
+    {% endfor %}
+{% endblock content %}
