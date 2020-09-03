@@ -68,7 +68,7 @@ def password():
         return redirect(url_for('users.account'))
     return render_template('password.html', title='Password', form=form)
 
-@users.route('/user_posts/<username>')
+@users.route('/user-posts/<username>') # uri에는 _보다 -사용
 @login_required
 def user_posts(username):
     page = request.args.get('page', 1, type=int)
@@ -76,7 +76,7 @@ def user_posts(username):
     posts = Post.query.filter_by(author=user).order_by(Post.date_posted.desc()).paginate(page=page, per_page=5)
     return render_template('user_post.html', posts=posts, user=user)
 
-@users.route('/posts_comment')
+@users.route('/posts-comment')
 @login_required
 def posts_comment():
     comment = Comment.query.filter_by(writer=current_user).order_by(Comment.timestamp.desc()).first()
@@ -85,7 +85,7 @@ def posts_comment():
     post = comment.article
     return redirect(url_for('posts.post', post_id=post.id))
 
-@users.route('/reset_password', methods=['GET', 'POST'])
+@users.route('/reset-password', methods=['GET', 'POST'])
 def request_reset():
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))
@@ -97,7 +97,7 @@ def request_reset():
         return redirect(url_for('users.login'))
     return render_template('request_reset.html', title='Reset Password', form=form)
 
-@users.route('/reset_password/<token>', methods=['GET', 'POST'])
+@users.route('/reset-password/<token>', methods=['GET', 'POST'])
 def reset_password(token):
     if current_user.is_authenticated:
         return redirect(url_for('main.index'))

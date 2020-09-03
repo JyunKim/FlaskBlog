@@ -69,7 +69,7 @@ def delete_post(post_id):
     flash('Your post has been deleted!', 'success')
     return redirect(url_for('main.index'))
 
-@posts.route('/post/<int:post_id>/update_comment/<int:comment_id>', methods=['GET', 'POST'])
+@posts.route('/post/<int:post_id>/update-comment/<int:comment_id>', methods=['GET', 'POST'])
 @login_required
 def update_comment(post_id, comment_id):
     comment = Comment.query.get_or_404(comment_id)
@@ -85,7 +85,7 @@ def update_comment(post_id, comment_id):
         form.body.data = comment.body
     return render_template('update_comment.html', title='Update Comment', form=form)
 
-@posts.route('/post/<int:post_id>/delete_comment/<int:comment_id>')
+@posts.route('/post/<int:post_id>/delete-comment/<int:comment_id>')
 @login_required
 def delete_comment(post_id, comment_id):
     comment = Comment.query.get_or_404(comment_id)
